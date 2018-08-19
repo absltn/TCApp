@@ -1,0 +1,9 @@
+c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\bin\Debug\TCApp.exe.config
+c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\bin\Debug\TCApp.exe
+c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\bin\Debug\TCApp.pdb
+c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCApp.Form1.resources
+c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCApp.Properties.Resources.resources
+c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCApp.csproj.GenerateResource.Cache
+c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCApp.exe
+c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCApp.pdb
+c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCApp.csprojResolveAssemblyReference.cache
