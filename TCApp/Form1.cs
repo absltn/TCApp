@@ -73,13 +73,8 @@ namespace TCApp
                             Colorator colorator = new Colorator(linesToCheck[i], Color.Green);
                             finalList.Add(colorator);                     // insert colored text into list
                             removed_indexes[j] = 0;
-                            //removing found element from initial array
-                            //linesOfOrigin = linesOfOrigin.Where((val, idx) => idx != j).ToArray();
-                            //foreach (var st in linesOfOrigin)
-                            //AppendText(richTextBox2, Color.Blue, st.ToString() + "\n");
                             found = true;
                             break;
-                            //AppendText(richTextBox2, Color.Blue, "Found" + "\n");
                         }
                     }
                 
@@ -100,7 +95,6 @@ namespace TCApp
                                 finalList.Add(colorator2);
 
                                 removed_indexes[j] = 0;
-                                //linesOfOrigin = linesOfOrigin.Where((val, idx) => idx != j).ToArray();
                                 found = true;
                                 break;
                             }
@@ -112,10 +106,6 @@ namespace TCApp
                         Colorator colorator = new Colorator(linesToCheck[i], Color.Orange);
                         finalList.Add(colorator);
                     }
-
-                 //   for (int j = 0; j < indexSize; j++)
-                 //   AppendText(richTextBox2, Color.Black, removed_indexes[j].ToString() + " ");
-                 //   AppendText(richTextBox2, Color.Black, "\n");
                 }
 
                 for (int i = 0; i < lostLines.Length; i++)
@@ -129,9 +119,6 @@ namespace TCApp
 
                 for (int i = 0; i < finalList.Count(); i++)
                     AppendText(richTextBox2, finalList[i].color,finalList[i].text + "\n");
-          //      AppendText(richTextBox2, Color.Black, "\n");
-          //      for (int j=0;j<indexSize;j++)
-          //      AppendText(richTextBox2, Color.Black, removed_indexes[j].ToString() + " ");
             }
 
         }      
