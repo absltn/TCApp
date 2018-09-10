@@ -7,3 +7,13 @@ c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCAp
 c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCApp.exe
 c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCApp.pdb
 c:\users\airliq\documents\visual studio 2017\Projects\TCApp\TCApp\obj\Debug\TCApp.csprojResolveAssemblyReference.cache
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\bin\Debug\TCApp.exe.config
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\bin\Debug\TCApp.exe
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\bin\Debug\TCApp.pdb
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\obj\Debug\TCApp.csprojAssemblyReference.cache
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\obj\Debug\TCApp.Form1.resources
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\obj\Debug\TCApp.Properties.Resources.resources
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\obj\Debug\TCApp.csproj.GenerateResource.cache
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\obj\Debug\TCApp.csproj.CoreCompileInputs.cache
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\obj\Debug\TCApp.exe
+C:\Users\AirLiq\Documents\Visual Studio 2017\Github Projects\TCApp\TCApp\obj\Debug\TCApp.pdb

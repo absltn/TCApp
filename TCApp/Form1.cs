@@ -140,14 +140,3 @@ namespace TCApp
         }
     }
 }
-
-public class Colorator     // envelope for colored text
-{
-    public string text;
-    public Color color;
-    public Colorator(string text, Color color)
-    {
-        this.text = text;
-        this.color = color;
-    }
-}
