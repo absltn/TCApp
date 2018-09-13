@@ -18,12 +18,25 @@ namespace TCApp
             AppendText(this.richTextBox3, Color.Red, "Deleted text is red.");
         }
 
-        private void compareAsync(string[] linesOfOrigin, string[] linesToCheck, int[] removed_indexes, List<Colorator> finalList)
+        private async System.Threading.Tasks.Task CompareAsync(string[] linesOfOrigin, string[] linesToCheck, int[] removed_indexes, List<Colorator> finalList)
         {
+            progressBar1.Value = 0;
+            int totalSize = linesToCheck.Length;
+            int cycleCounter = 0;                                            // count cycle for precise position of deleted line
+            int[] removed_position = new int[linesOfOrigin.Length];
+
             for (int i = 0; i < linesOfOrigin.Length; i++)              // initialize array of removed original indexes
+            {
                 removed_indexes[i] = 1;
+                removed_position[i] = 0;
+            }
+
             for (int i = 0; i < linesToCheck.Length; i++)
             {
+                if (i%linesToCheck.Length/100 == 1)
+                {
+                    progressBar1.Invoke((Action)(() => progressBar1.Increment(1)));
+                }
                 bool found = false;
                 for (int j = 0; j < linesOfOrigin.Length; j++)
                 {
@@ -33,6 +46,7 @@ namespace TCApp
                         finalList.Add(colorator);                     // insert colored text into list
                         removed_indexes[j] = 0;
                         found = true;
+                        cycleCounter++;
                         break;
                     }
                 }
@@ -55,6 +69,7 @@ namespace TCApp
 
                             removed_indexes[j] = 0;
                             found = true;
+                            cycleCounter++;
                             break;
                         }
                     }
@@ -64,25 +79,26 @@ namespace TCApp
                 {
                     Colorator colorator = new Colorator(linesToCheck[i], Color.Orange);
                     finalList.Add(colorator);
+                    cycleCounter++;
                 }
             }
-            
+            // insert colored text into list
             for (int i = 0; i < linesOfOrigin.Length; i++)
             {
                 if (removed_indexes[i] == 1)
                 {
                     Colorator colorator = new Colorator(linesOfOrigin[i], Color.Red);
-                    finalList.Insert(i + 1, colorator);            // insert colored text into list
+                    finalList.Insert(i, colorator);            
                 }
             }
         }
 
-        private async System.Threading.Tasks.Task ComputeAsync(string[] origin, string[] changed, int[] rem, List<Colorator> finalList)
+        private void ComputeAsync(string[] origin, string[] changed, int[] rem, List<Colorator> finalList)
         {
-            compareAsync(origin, changed, rem, finalList);
+            CompareAsync(origin, changed, rem, finalList);
         }
 
-        private async void compare(string filename)
+        private async void Compare(string filename)
         {
             richTextBox2.Text = "";                                      // clear richTextBox2 on b2 click
             string originalText = richTextBox1.Text;
@@ -100,12 +116,12 @@ namespace TCApp
             List<Colorator> finalList = new List<Colorator>();
             int[] removed_indexes = new int[linesOfOrigin.Length];
 
-            await System.Threading.Tasks.Task.Run(() => ComputeAsync(linesOfOrigin, linesToCheck, removed_indexes,finalList));
+            await Task.Run(() => ComputeAsync(linesOfOrigin, linesToCheck, removed_indexes,finalList));
             for (int i = 0; i<finalList.Count(); i++)
                 AppendText(richTextBox2, finalList[i].color, finalList[i].text +"\n");
         }
 
-        private async void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
             string filename = openFileDialog1.FileName;
@@ -114,11 +130,11 @@ namespace TCApp
             textBox1.Text = filename;
             if (richTextBox2.Text != "")
             {
-                compare(filename);
+                Compare(filename);
             }
         }
 
-        private async void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
             if (richTextBox1.Text == "")
             {
@@ -134,7 +150,7 @@ namespace TCApp
             {
                 openFileDialog1.ShowDialog();
                 string filename = openFileDialog1.FileName;
-                compare(filename);
+                Compare(filename);
             }
             
         }      
