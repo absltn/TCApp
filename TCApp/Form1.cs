@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.IO;
 using System.Windows.Forms;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace TCApp
 {
@@ -13,13 +13,32 @@ namespace TCApp
         public Form1()
         {
             InitializeComponent();
+            InitializeBackgroundWorker();
             AppendText(this.richTextBox3, Color.Green, "Unchanged text is green. ");
             AppendText(this.richTextBox3, Color.Orange, "Added/Edited text is orange. ");
             AppendText(this.richTextBox3, Color.Red, "Deleted text is red.");
         }
 
-        private async System.Threading.Tasks.Task CompareAsync(string[] linesOfOrigin, string[] linesToCheck, int[] removed_indexes, List<Colorator> finalList)
+        private void InitializeBackgroundWorker()
         {
+            backgroundWorker1.DoWork +=
+                new DoWorkEventHandler(backgroundWorker1_DoWork);
+            backgroundWorker1.RunWorkerCompleted +=
+                new RunWorkerCompletedEventHandler(
+                    backgroundWorker1_RunWorkerCompleted);
+        }
+        private void clear(RichTextBox r)
+        {
+            r.Text = "";
+        }
+
+        private List<Colorator> Compare(List<string[]> list, BackgroundWorker worker, DoWorkEventArgs e)
+        {
+            string[] linesOfOrigin = list[0];
+            string[] linesToCheck = list[1];
+            List<Colorator> finalList = new List<Colorator>();
+            int[] removed_indexes = new int[linesOfOrigin.Length];
+
             progressBar1.Value = 0;
             int totalSize = linesToCheck.Length;
             int cycleCounter = 0;                                            // count cycle for precise position of deleted line
@@ -33,7 +52,7 @@ namespace TCApp
 
             for (int i = 0; i < linesToCheck.Length; i++)
             {
-                if (i%linesToCheck.Length/100 == 1)
+                if (i % linesToCheck.Length / 100 == 1)
                 {
                     progressBar1.Invoke((Action)(() => progressBar1.Increment(1)));
                 }
@@ -88,37 +107,11 @@ namespace TCApp
                 if (removed_indexes[i] == 1)
                 {
                     Colorator colorator = new Colorator(linesOfOrigin[i], Color.Red);
-                    finalList.Insert(i, colorator);            
+                    finalList.Insert(i, colorator);
                 }
             }
-        }
 
-        private void ComputeAsync(string[] origin, string[] changed, int[] rem, List<Colorator> finalList)
-        {
-            CompareAsync(origin, changed, rem, finalList);
-        }
-
-        private async void Compare(string filename)
-        {
-            richTextBox2.Text = "";                                      // clear richTextBox2 on b2 click
-            string originalText = richTextBox1.Text;
-            string[] linesOfOrigin = originalText.Split(
-            new[] { "\r\n", "\r", "\n" },
-                StringSplitOptions.RemoveEmptyEntries
-            );
-
-            string textToCheck = File.ReadAllText(filename);
-            string[] linesToCheck = textToCheck.Split(
-            new[] { "\r\n", "\r", "\n" },
-                StringSplitOptions.RemoveEmptyEntries
-            );
-            textBox2.Text = filename;
-            List<Colorator> finalList = new List<Colorator>();
-            int[] removed_indexes = new int[linesOfOrigin.Length];
-
-            await Task.Run(() => ComputeAsync(linesOfOrigin, linesToCheck, removed_indexes,finalList));
-            for (int i = 0; i<finalList.Count(); i++)
-                AppendText(richTextBox2, finalList[i].color, finalList[i].text +"\n");
+            return finalList;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -130,7 +123,7 @@ namespace TCApp
             textBox1.Text = filename;
             if (richTextBox2.Text != "")
             {
-                Compare(filename);
+                backgroundWorker1.RunWorkerAsync(filename);
             }
         }
 
@@ -150,10 +143,41 @@ namespace TCApp
             {
                 openFileDialog1.ShowDialog();
                 string filename = openFileDialog1.FileName;
-                Compare(filename);
+                clear(richTextBox2);   // clear richTextBox2 on b2 click
+                string originalText = richTextBox1.Text;
+                string[] linesOfOrigin = originalText.Split(
+                new[] { "\r\n", "\r", "\n" },
+                    StringSplitOptions.RemoveEmptyEntries
+                );
+                string textToCheck = File.ReadAllText(filename);
+                string[] linesToCheck = textToCheck.Split(
+                    new[] { "\r\n", "\r", "\n" },
+                    StringSplitOptions.RemoveEmptyEntries
+                    );
+                textBox2.Text = filename;
+                List<string[]> stringsToCompare = new List<string[]>();
+                stringsToCompare.Add(linesOfOrigin);
+                stringsToCompare.Add(linesToCheck);
+                backgroundWorker1.RunWorkerAsync(stringsToCompare);
             }
             
-        }      
+        }
+
+        private void backgroundWorker1_DoWork(object sender,
+            DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            e.Result = Compare((List<string[]>)e.Argument, worker, e);
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(
+            object sender, RunWorkerCompletedEventArgs e)
+        {
+            List<Colorator> finalList = (List<Colorator>)e.Result;
+            for (int i = 0; i < finalList.Count(); i++)
+                AppendText(richTextBox2, finalList[i].color, finalList[i].text + "\n");         
+        }
+
         void AppendText(RichTextBox box, Color color, string text)
         {
             int start = box.TextLength;
@@ -166,18 +190,9 @@ namespace TCApp
             box.SelectionLength = 0;
         }
 
-    }
-}
-
-class Worker
-{
-    public static void SomeLongOperation(IProgress<string> progress)
-    {
-        // Perform a long running work...
-        for (var i = 0; i < 10; i++)
+        private void Form1_Load(object sender, EventArgs e)
         {
-            Task.Delay(500).Wait();
-            progress.Report(i.ToString());
+
         }
     }
 }

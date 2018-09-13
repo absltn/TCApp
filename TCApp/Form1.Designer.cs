@@ -41,6 +41,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -228,6 +229,7 @@
             this.MinimumSize = new System.Drawing.Size(640, 480);
             this.Name = "Form1";
             this.Text = "TCApp";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
@@ -249,6 +251,7 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ProgressBar progressBar1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
 
