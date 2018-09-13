@@ -21,25 +21,29 @@ namespace TCApp
 
         private void InitializeBackgroundWorker()
         {
+            backgroundWorker1.WorkerReportsProgress = true;
+            backgroundWorker1.WorkerSupportsCancellation = true;
+            backgroundWorker2.WorkerSupportsCancellation = true;
             backgroundWorker1.DoWork +=
                 new DoWorkEventHandler(backgroundWorker1_DoWork);
+            backgroundWorker2.DoWork +=
+                new DoWorkEventHandler(backgroundWorker2_DoWork);
             backgroundWorker1.RunWorkerCompleted +=
                 new RunWorkerCompletedEventHandler(
                     backgroundWorker1_RunWorkerCompleted);
+
         }
         private void clear(RichTextBox r)
         {
             r.Text = "";
         }
 
-        private List<Colorator> Compare(List<string[]> list, BackgroundWorker worker, DoWorkEventArgs e)
+        private List<Colorator> Compare(List<string[]> list, BackgroundWorker backgroundWorker1, DoWorkEventArgs e)
         {
             string[] linesOfOrigin = list[0];
             string[] linesToCheck = list[1];
             List<Colorator> finalList = new List<Colorator>();
             int[] removed_indexes = new int[linesOfOrigin.Length];
-
-            progressBar1.Value = 0;
             int totalSize = linesToCheck.Length;
             int cycleCounter = 0;                                            // count cycle for precise position of deleted line
             int[] removed_position = new int[linesOfOrigin.Length];
@@ -52,10 +56,7 @@ namespace TCApp
 
             for (int i = 0; i < linesToCheck.Length; i++)
             {
-                if (i % linesToCheck.Length / 100 == 1)
-                {
-                    progressBar1.Invoke((Action)(() => progressBar1.Increment(1)));
-                }
+                progressBar1.Invoke(() => { progressBar1.Value = 100 * i / linesToCheck.Length; });
                 bool found = false;
                 for (int j = 0; j < linesOfOrigin.Length; j++)
                 {
@@ -110,25 +111,57 @@ namespace TCApp
                     finalList.Insert(i, colorator);
                 }
             }
-
+            for (int i = 0; i < finalList.Count(); i++)
+                richTextBox2.Invoke(() => { AppendText(richTextBox2, finalList[i].color, finalList[i].text + "\n"); });
+            backgroundWorker1.CancelAsync();
+            backgroundWorker2.CancelAsync();
             return finalList;
+        }
+
+        private int WriteToTextBox(string filename, BackgroundWorker backgroundWorker2, DoWorkEventArgs e)
+        {
+            string readFile = File.ReadAllText(filename);
+            richTextBox1.Invoke(() => { richTextBox1.Text = readFile; });
+            textBox1.Invoke(() => { textBox1.Text = filename; });
+            backgroundWorker1.CancelAsync();
+            backgroundWorker2.CancelAsync();
+            return 0;
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            progressBar1.Value = 0;
             openFileDialog1.ShowDialog();
             string filename = openFileDialog1.FileName;
-            string readFile = File.ReadAllText(filename);
-            richTextBox1.Text = readFile;
-            textBox1.Text = filename;
+            backgroundWorker2.RunWorkerAsync(filename);
             if (richTextBox2.Text != "")
             {
-                backgroundWorker1.RunWorkerAsync(filename);
+                string originalText = richTextBox1.Text;
+                string[] linesOfOrigin = originalText.Split(
+                new[] { "\r\n", "\r", "\n" },
+                    StringSplitOptions.RemoveEmptyEntries
+                );
+                string textToCheck = richTextBox2.Text;
+                string[] linesToCheck = textToCheck.Split(
+                    new[] { "\r\n", "\r", "\n" },
+                    StringSplitOptions.RemoveEmptyEntries
+                    );
+                clear(richTextBox2);
+                List<string[]> stringsToCompare = new List<string[]>();
+                stringsToCompare.Add(linesOfOrigin);
+                stringsToCompare.Add(linesToCheck);
+                backgroundWorker1.RunWorkerAsync(stringsToCompare);
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            progressBar1.Value = 0;
             if (richTextBox1.Text == "")
             {
                 var form = new Form();
@@ -170,13 +203,16 @@ namespace TCApp
             e.Result = Compare((List<string[]>)e.Argument, worker, e);
         }
 
+        private void backgroundWorker2_DoWork(object sender,
+           DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            e.Result = WriteToTextBox((string)e.Argument, worker, e);
+        }
+
         private void backgroundWorker1_RunWorkerCompleted(
             object sender, RunWorkerCompletedEventArgs e)
-        {
-            List<Colorator> finalList = (List<Colorator>)e.Result;
-            for (int i = 0; i < finalList.Count(); i++)
-                AppendText(richTextBox2, finalList[i].color, finalList[i].text + "\n");         
-        }
+        { }
 
         void AppendText(RichTextBox box, Color color, string text)
         {
@@ -191,8 +227,6 @@ namespace TCApp
         }
 
         private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
+        { }
     }
 }
