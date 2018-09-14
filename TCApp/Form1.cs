@@ -23,15 +23,8 @@ namespace TCApp
         {
             backgroundWorker1.WorkerReportsProgress = true;
             backgroundWorker1.WorkerSupportsCancellation = true;
-            backgroundWorker2.WorkerSupportsCancellation = true;
             backgroundWorker1.DoWork +=
                 new DoWorkEventHandler(backgroundWorker1_DoWork);
-          /*  backgroundWorker2.DoWork +=
-                new DoWorkEventHandler(backgroundWorker2_DoWork);
-            backgroundWorker1.RunWorkerCompleted +=
-                new RunWorkerCompletedEventHandler(
-                    backgroundWorker1_RunWorkerCompleted);*/
-
         }
 
         private int Compare(List<string[]> list, BackgroundWorker backgroundWorker1, DoWorkEventArgs e)
@@ -118,15 +111,6 @@ namespace TCApp
             return 0;
         }
 
-       /* private int WriteToTextBox(string filename, BackgroundWorker backgroundWorker2, DoWorkEventArgs e)
-        {
-            string readFile = File.ReadAllText(filename);
-            richTextBox1.Invoke(() => { richTextBox1.Text = readFile; });
-            textBox1.Invoke(() => { textBox1.Text = filename; });
-            backgroundWorker2.CancelAsync();
-            return 0;
-        } */
-
         private void button1_Click(object sender, EventArgs e)
         {
             progressBar1.Value = 0;
@@ -182,14 +166,6 @@ namespace TCApp
             BackgroundWorker worker = sender as BackgroundWorker;
             e.Result = Compare((List<string[]>)e.Argument, worker, e);
         }
-
-       /* private void backgroundWorker2_DoWork(object sender,
-           DoWorkEventArgs e)
-        {
-            BackgroundWorker worker = sender as BackgroundWorker;
-            e.Result = WriteToTextBox(
-                (string)e.Argument, worker, e);
-        } */
 
         private void backgroundWorker1_RunWorkerCompleted(
             object sender, RunWorkerCompletedEventArgs e)
