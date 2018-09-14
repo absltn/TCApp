@@ -26,19 +26,15 @@ namespace TCApp
             backgroundWorker2.WorkerSupportsCancellation = true;
             backgroundWorker1.DoWork +=
                 new DoWorkEventHandler(backgroundWorker1_DoWork);
-            backgroundWorker2.DoWork +=
+          /*  backgroundWorker2.DoWork +=
                 new DoWorkEventHandler(backgroundWorker2_DoWork);
             backgroundWorker1.RunWorkerCompleted +=
                 new RunWorkerCompletedEventHandler(
-                    backgroundWorker1_RunWorkerCompleted);
+                    backgroundWorker1_RunWorkerCompleted);*/
 
         }
-        private void clear(RichTextBox r)
-        {
-            r.Text = "";
-        }
 
-        private List<Colorator> Compare(List<string[]> list, BackgroundWorker backgroundWorker1, DoWorkEventArgs e)
+        private int Compare(List<string[]> list, BackgroundWorker backgroundWorker1, DoWorkEventArgs e)
         {
             string[] linesOfOrigin = list[0];
             string[] linesToCheck = list[1];
@@ -56,7 +52,8 @@ namespace TCApp
 
             for (int i = 0; i < linesToCheck.Length; i++)
             {
-                progressBar1.Invoke(() => { progressBar1.Value = 100 * i / linesToCheck.Length; });
+                progressBar1.Invoke(() => 
+                    { progressBar1.Value = 100 * i / linesToCheck.Length; });
                 bool found = false;
                 for (int j = 0; j < linesOfOrigin.Length; j++)
                 {
@@ -101,6 +98,7 @@ namespace TCApp
                     finalList.Add(colorator);
                     cycleCounter++;
                 }
+                
             }
             // insert colored text into list
             for (int i = 0; i < linesOfOrigin.Length; i++)
@@ -113,54 +111,36 @@ namespace TCApp
             }
             for (int i = 0; i < finalList.Count(); i++)
                 richTextBox2.Invoke(() => { AppendText(richTextBox2, finalList[i].color, finalList[i].text + "\n"); });
-            backgroundWorker1.CancelAsync();
-            backgroundWorker2.CancelAsync();
-            return finalList;
+            backgroundWorker1_RunWorkerCompleted();
+            return 0;
         }
 
-        private int WriteToTextBox(string filename, BackgroundWorker backgroundWorker2, DoWorkEventArgs e)
+       /* private int WriteToTextBox(string filename, BackgroundWorker backgroundWorker2, DoWorkEventArgs e)
         {
             string readFile = File.ReadAllText(filename);
             richTextBox1.Invoke(() => { richTextBox1.Text = readFile; });
             textBox1.Invoke(() => { textBox1.Text = filename; });
-            backgroundWorker1.CancelAsync();
             backgroundWorker2.CancelAsync();
             return 0;
-        }
-
-        private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            
-        }
+        } */
 
         private void button1_Click(object sender, EventArgs e)
         {
+            backgroundWorker1_RunWorkerCompleted();
+            backgroundWorker1.CancelAsync();
             progressBar1.Value = 0;
             openFileDialog1.ShowDialog();
             string filename = openFileDialog1.FileName;
-            backgroundWorker2.RunWorkerAsync(filename);
-            if (richTextBox2.Text != "")
-            {
-                string originalText = richTextBox1.Text;
-                string[] linesOfOrigin = originalText.Split(
-                new[] { "\r\n", "\r", "\n" },
-                    StringSplitOptions.RemoveEmptyEntries
-                );
-                string textToCheck = richTextBox2.Text;
-                string[] linesToCheck = textToCheck.Split(
-                    new[] { "\r\n", "\r", "\n" },
-                    StringSplitOptions.RemoveEmptyEntries
-                    );
-                clear(richTextBox2);
-                List<string[]> stringsToCompare = new List<string[]>();
-                stringsToCompare.Add(linesOfOrigin);
-                stringsToCompare.Add(linesToCheck);
-                backgroundWorker1.RunWorkerAsync(stringsToCompare);
-            }
+            string readFile = File.ReadAllText(filename);
+            richTextBox1.Text = readFile;
+            textBox1.Text = filename;
+            richTextBox2.Invoke(() => { richTextBox2.Text = ""; });
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            backgroundWorker1_RunWorkerCompleted();
+            backgroundWorker1.CancelAsync();
             progressBar1.Value = 0;
             if (richTextBox1.Text == "")
             {
@@ -176,7 +156,7 @@ namespace TCApp
             {
                 openFileDialog1.ShowDialog();
                 string filename = openFileDialog1.FileName;
-                clear(richTextBox2);   // clear richTextBox2 on b2 click
+                richTextBox2.Text="";   // clear richTextBox2 on b2 click
                 string originalText = richTextBox1.Text;
                 string[] linesOfOrigin = originalText.Split(
                 new[] { "\r\n", "\r", "\n" },
@@ -192,6 +172,7 @@ namespace TCApp
                 stringsToCompare.Add(linesOfOrigin);
                 stringsToCompare.Add(linesToCheck);
                 backgroundWorker1.RunWorkerAsync(stringsToCompare);
+                backgroundWorker1.CancelAsync();
             }
             
         }
@@ -203,16 +184,21 @@ namespace TCApp
             e.Result = Compare((List<string[]>)e.Argument, worker, e);
         }
 
-        private void backgroundWorker2_DoWork(object sender,
+       /* private void backgroundWorker2_DoWork(object sender,
            DoWorkEventArgs e)
         {
             BackgroundWorker worker = sender as BackgroundWorker;
-            e.Result = WriteToTextBox((string)e.Argument, worker, e);
-        }
+            e.Result = WriteToTextBox(
+                (string)e.Argument, worker, e);
+        } */
 
         private void backgroundWorker1_RunWorkerCompleted(
             object sender, RunWorkerCompletedEventArgs e)
-        { }
+        {
+            progressBar1.Invoke(() =>
+            { progressBar1.Value = 0; });
+            backgroundWorker1.CancelAsync();
+        }
 
         void AppendText(RichTextBox box, Color color, string text)
         {
@@ -225,8 +211,9 @@ namespace TCApp
             }
             box.SelectionLength = 0;
         }
-
         private void Form1_Load(object sender, EventArgs e)
-        { }
+        { 
+
+        }
     }
 }
