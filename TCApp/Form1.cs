@@ -134,7 +134,6 @@ namespace TCApp
             string readFile = File.ReadAllText(filename);
             richTextBox1.Text = readFile;
             textBox1.Text = filename;
-            richTextBox2.Invoke(() => { richTextBox2.Text = ""; });
         }
 
         private void button2_Click(object sender, EventArgs e)
