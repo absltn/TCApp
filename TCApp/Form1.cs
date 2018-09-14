@@ -111,7 +111,10 @@ namespace TCApp
             }
             for (int i = 0; i < finalList.Count(); i++)
                 richTextBox2.Invoke(() => { AppendText(richTextBox2, finalList[i].color, finalList[i].text + "\n"); });
-            backgroundWorker1_RunWorkerCompleted();
+            progressBar1.Invoke(() => 
+                    { progressBar1.Value = 0; });
+            backgroundWorker1.CancelAsync();
+            list.Clear();            
             return 0;
         }
 
@@ -126,20 +129,18 @@ namespace TCApp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            backgroundWorker1_RunWorkerCompleted();
-            backgroundWorker1.CancelAsync();
+            progressBar1.Value = 0;
             progressBar1.Value = 0;
             openFileDialog1.ShowDialog();
             string filename = openFileDialog1.FileName;
             string readFile = File.ReadAllText(filename);
             richTextBox1.Text = readFile;
             textBox1.Text = filename;
+            richTextBox2.Text = "";
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            backgroundWorker1_RunWorkerCompleted();
-            backgroundWorker1.CancelAsync();
             progressBar1.Value = 0;
             if (richTextBox1.Text == "")
             {
@@ -171,7 +172,6 @@ namespace TCApp
                 stringsToCompare.Add(linesOfOrigin);
                 stringsToCompare.Add(linesToCheck);
                 backgroundWorker1.RunWorkerAsync(stringsToCompare);
-                backgroundWorker1.CancelAsync();
             }
             
         }
@@ -196,7 +196,6 @@ namespace TCApp
         {
             progressBar1.Invoke(() =>
             { progressBar1.Value = 0; });
-            backgroundWorker1.CancelAsync();
         }
 
         void AppendText(RichTextBox box, Color color, string text)
